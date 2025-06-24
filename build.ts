@@ -12,7 +12,8 @@ await Promise.all(
 		const rawTarget = target.replace("bun-", "");
 		console.log(`Compiling for ${rawTarget}..`);
 
-		await Bun.$`rm -rf ${BUILD_FOLDER}`;
+		// Don't fail if the folder doesn't exist
+		await Bun.$`rm -rf ${BUILD_FOLDER} || true`;
 
 		const cmd = [
 			"bun",
