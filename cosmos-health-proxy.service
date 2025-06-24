@@ -1,0 +1,14 @@
+[Unit]
+Description=Cosmos Health Proxy
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=ec2-user
+Type=simple
+ExecStart=/home/ec2-user/cosmos-health-proxy start -p 5384 -s localhost:26657
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
