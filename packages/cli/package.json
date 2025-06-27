@@ -1,0 +1,13 @@
+{
+	"name": "@seda-protocol/cosmos-accelerator",
+	"private": true,
+	"version": "1.0.0",
+	"type": "module",
+	"main": "./src/index.ts",
+	"dependencies": {
+		"@commander-js/extra-typings": "^12.1.0",
+		"@seda-protocol/cosmos-accelerator-server": "workspace:*",
+		"@seda-protocol/cosmos-accelerator-logger": "workspace:*",
+		"commander": "^14.0.0"
+	}
+}

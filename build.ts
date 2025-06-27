@@ -3,9 +3,9 @@ import { readableStreamToText } from "bun";
 
 const PLATFORM_TARGETS = ["bun-linux-x64", "bun-linux-arm64"];
 
-const BINARY_NAME = "cosmos-health-proxy";
+const BINARY_NAME = "seda-cosmos-accelerator";
 const BUILD_FOLDER = resolve(import.meta.dir, "./dist/");
-const SRC_TARGET = [resolve(process.cwd(), "./index.ts")];
+const SRC_TARGET = [resolve(process.cwd(), "./packages/cli/src/index.ts")];
 
 await Promise.all(
 	PLATFORM_TARGETS.map(async (target) => {

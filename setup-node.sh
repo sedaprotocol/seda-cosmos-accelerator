@@ -3,7 +3,7 @@ set -e
 
 #
 # This script is run on a node to configure cosmovisor, systemctl,
-# seda, prometheus, and cosmos-health-proxy.
+# seda, prometheus, and seda-cosmos-accelerator.
 #
 # NOTE: Assumes Amazon Linux 2023
 
@@ -12,7 +12,7 @@ SEDA_RPC_URL_2=
 SEDA_NETWORK=
 SEDA_VERSION=
 SEDA_NODE_NAME=
-HEALTH_PROXY_VERSION=
+ACCELERATOR_VERSION=
 
 # Check that RPC_URL is set
 if [ -z "${SEDA_RPC_URL_1}" ] || [ -z "${SEDA_RPC_URL_2}" ]; then
@@ -38,10 +38,10 @@ if [ -z "${SEDA_NODE_NAME}" ]; then
     exit 1
 fi
 
-# Check that HEALTH_PROXY_VERSION is set
-if [ -z "${HEALTH_PROXY_VERSION}" ]; then
-    echo "Warning: HEALTH_PROXY_VERSION environment variable is not set"
-    read -p "Do you want to continue without setting HEALTH_PROXY_VERSION? (y/n) " -n 1 -r
+# Check that ACCELERATOR_VERSION is set
+if [ -z "${ACCELERATOR_VERSION}" ]; then
+    echo "Warning: ACCELERATOR_VERSION environment variable is not set"
+    read -p "Do you want to continue without setting ACCELERATOR_VERSION? (y/n) " -n 1 -r
     echo
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
         echo "Exiting..."
@@ -126,32 +126,32 @@ sudo systemctl daemon-reload
 sudo systemctl enable seda-node
 fi
 
-# Download and install cosmos-health-proxy
-if [ ! -z "${HEALTH_PROXY_VERSION}" ]; then
-    HEALTH_PROXY_URL=https://github.com/sedaprotocol/cosmos-health-proxy/releases/download/${HEALTH_PROXY_VERSION}/cosmos-health-proxy-linux-x64
+# Download and install seda-cosmos-accelerator
+if [ ! -z "${ACCELERATOR_VERSION}" ]; then
+    ACCELERATOR_URL=https://github.com/sedaprotocol/seda-cosmos-accelerator/releases/download/${ACCELERATOR_VERSION}/seda-cosmos-accelerator-linux-x64
     if [ $ARCH = "aarch64" ]; then
-        HEALTH_PROXY_URL=https://github.com/sedaprotocol/cosmos-health-proxy/releases/download/${HEALTH_PROXY_VERSION}/cosmos-health-proxy-linux-arm64
+        ACCELERATOR_URL=https://github.com/sedaprotocol/seda-cosmos-accelerator/releases/download/${ACCELERATOR_VERSION}/seda-cosmos-accelerator-linux-arm64
     fi
 
-    curl -LO $HEALTH_PROXY_URL
-    mv $(basename $HEALTH_PROXY_URL) ./cosmos-health-proxy
-    chmod +x ./cosmos-health-proxy
+    curl -LO $ACCELERATOR_URL
+    mv $(basename $ACCELERATOR_URL) ./seda-cosmos-accelerator
+    chmod +x ./seda-cosmos-accelerator
 
-    HEALTH_PROXY_SYSFILE=/etc/systemd/system/cosmos-health-proxy.service
+    ACCELERATOR_SYSFILE=/etc/systemd/system/seda-cosmos-accelerator.service
 
-    if [ ! -f $HEALTH_PROXY_SYSFILE ]; then
-        printf "\n\n\nSETTING UP COSMOS HEALTH PROXY\n\n\n\n"
+    if [ ! -f $ACCELERATOR_SYSFILE ]; then
+        printf "\n\n\nSETTING UP SEDA COSMOS ACCELERATOR\n\n\n\n"
 
-        sudo tee /etc/systemd/system/cosmos-health-proxy.service > /dev/null <<EOF
+        sudo tee /etc/systemd/system/seda-cosmos-accelerator.service > /dev/null <<EOF
 [Unit]
-Description=Cosmos Health Proxy
+Description=Seda Cosmos Accelerator
 Wants=network-online.target
 After=network-online.target
 
 [Service]
 User=ec2-user
 Type=simple
-ExecStart=/home/ec2-user/cosmos-health-proxy start -p 5384 -s localhost:26657
+ExecStart=/home/ec2-user/seda-cosmos-accelerator start -p 5384 -s localhost:26657
 Restart=always
 RestartSec=3
 
@@ -161,10 +161,10 @@ WantedBy=multi-user.target
 EOF
 
         sudo systemctl daemon-reload
-        sudo systemctl enable cosmos-health-proxy
+        sudo systemctl enable seda-cosmos-accelerator
     fi
 else
-    echo "HEALTH_PROXY_VERSION environment variable is not set, skipping cosmos-health-proxy"
+    echo "ACCELERATOR_VERSION environment variable is not set, skipping seda-cosmos-accelerator"
 fi
 
 # Download and install prometheus node exporter
@@ -241,7 +241,7 @@ sed 's|trust_hash = ""|trust_hash = '$BLOCK_HASH'|g' .sedad/config/config.toml -
 
 # Start all the services
 sudo systemctl start seda-node
-sudo systemctl start cosmos-health-proxy
+sudo systemctl start seda-cosmos-accelerator
 sudo systemctl start node-exporter
 
 echo "Done setting up node"

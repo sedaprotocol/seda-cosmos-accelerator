@@ -24,7 +24,7 @@ jobs:
       - name: 📦 Install Dependencies
         run: bun install
 
-      - name: 🔨 Build cosmos-health-proxy
+      - name: 🔨 Build seda-cosmos-accelerator
         run: |
           bun run build
 
@@ -44,8 +44,8 @@ jobs:
         with:
           name: release-assets
           path: |
-            dist/cosmos-health-proxy-linux-arm64
-            dist/cosmos-health-proxy-linux-x64
+            dist/seda-cosmos-accelerator-linux-arm64
+            dist/seda-cosmos-accelerator-linux-x64
 
   create_release:
     name: 🎉 Create GitHub Release

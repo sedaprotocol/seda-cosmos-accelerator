@@ -1,0 +1,12 @@
+{
+	"name": "@seda-protocol/cosmos-accelerator-logger",
+	"private": true,
+	"version": "1.0.0",
+	"type": "module",
+	"main": "./src/index.ts",
+	"dependencies": {
+		"winston": "^3.17.0",
+		"winston-daily-rotate-file": "^5.0.0"
+	},
+	"devDependencies": {}
+}

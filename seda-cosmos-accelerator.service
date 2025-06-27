@@ -1,12 +1,12 @@
 [Unit]
-Description=Cosmos Health Proxy
+Description=SEDA Cosmos Accelerator
 Wants=network-online.target
 After=network-online.target
 
 [Service]
 User=ec2-user
 Type=simple
-ExecStart=/home/ec2-user/cosmos-health-proxy start -p 5384 -s localhost:26657
+ExecStart=/home/ec2-user/seda-cosmos-accelerator start -p 5384 -s localhost:26657
 Restart=always
 RestartSec=3
 
