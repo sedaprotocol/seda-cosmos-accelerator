@@ -262,6 +262,11 @@ EOF
 # Function to setup prometheus node exporter
 setup_node_exporter() {
     print_status "Setting up prometheus node exporter..."
+
+    # Check if SEDA is enabled, if not warn user
+    if [ "$run_seda" != true ] && [ "$run_all_steps" != true ]; then
+        print_warning "Node exporter is being set up without SEDA. You will need to edit SEDA settings later to enable metrics collection."
+    fi
     
     ARCH=$(get_architecture)
     NODE_EXPORTER_URL=https://github.com/prometheus/node_exporter/releases/download/v1.7.0/node_exporter-1.7.0.linux-amd64.tar.gz
