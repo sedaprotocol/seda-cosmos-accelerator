@@ -20,10 +20,10 @@ set -e
 # or provide them as environment variables
 # SEDA_RPC_URL_1=
 # SEDA_RPC_URL_2=
-# SEDA_NETWORK=
-# SEDA_VERSION=
+# SEDA_NETWORK=mainnet|testnet|devnet
+# SEDA_VERSION=v1.0.0|v0.1.10|...
 # SEDA_NODE_NAME=
-# ACCELERATOR_VERSION=
+# ACCELERATOR_VERSION=v...
 
 # Colors for output
 RED='\033[0;31m'
@@ -326,14 +326,15 @@ setup_seda() {
     ARCH=$(get_architecture)
     SEDA_URL=https://github.com/sedaprotocol/seda-chain/releases/download/${SEDA_VERSION}/sedad-amd64
     if [ $ARCH = "aarch64" ]; then
-        SEDA_URL=https://github.com/sedaprotocol/seda-chain/releases/download/${SEDA_VERSION}/sedad-linux-arm64
+        print_status "Using ARM64 architecture for SEDA node setup"
+        SEDA_URL=https://github.com/sedaprotocol/seda-chain/releases/download/${SEDA_VERSION}/sedad-arm64
     fi
     
     curl -LO $SEDA_URL
     mv $(basename $SEDA_URL) ./sedad
     chmod +x ./sedad
     
-    sedad join $SEDA_NODE_NAME --network $SEDA_NETWORK
+    ./sedad join $SEDA_NODE_NAME --network $SEDA_NETWORK
     cosmovisor init ./sedad
     
     # Configure telemetry if node exporter is enabled
@@ -343,9 +344,12 @@ setup_seda() {
         cosmovisor run config set app telemetry.prometheus-retention-time 60
     fi
 
-    # Disable seda signer as we're not spinning up a validator
-    cosmovisor run config set app seda.enable-seda-signer false
-    
+    # Disable seda signer as we're not spinning up a validator if the version is 1.0.0 or higher
+    if [[ $SEDA_VERSION == v1* ]]; then
+        print_status "Disabling SEDA signer as version is 1.0.0 or higher"
+        cosmovisor run config set app seda.enable-seda-signer false
+    fi
+
     # Get statesync info
     BLOCK_INFO=$(curl -s $SEDA_RPC_URL_1/block)
     BLOCK_HEIGHT=$(echo $BLOCK_INFO | jq '.result.block.header.height' | sed 's/"//g')
