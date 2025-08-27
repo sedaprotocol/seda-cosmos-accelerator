@@ -78,6 +78,11 @@ export async function createServer(opts: ServerOpts) {
 				requestLogger.debug("Handling request");
 
 				const url = new URL(`${opts.server}/${ctx.params["*"]}`);
+				// Preserve original query parameters
+				Object.entries(ctx.query).forEach(([key, value]) => {
+					url.searchParams.set(key, value);
+				});
+
 				requestLogger.silly(`URL: ${url.toString()}`);
 
 				const headers = new Headers(ctx.request.headers);
