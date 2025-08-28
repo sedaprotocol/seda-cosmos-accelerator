@@ -3,7 +3,7 @@
 	"module": "packages/cli/src/index.ts",
 	"type": "module",
 	"private": true,
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"workspaces": {
 		"catalog": {
 			"@seda-protocol/utils": "^2.0.0",
