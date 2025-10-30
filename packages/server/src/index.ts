@@ -69,6 +69,16 @@ export async function createServer(opts: ServerOpts) {
 				},
 			});
 		})
+		.get("/websocket", async (ctx) => {
+			const requestLogger = logger.child({
+				id: `websocket-request-${ctx.requestId}`,
+			});
+			requestLogger.debug("Handling request");
+
+			return new Response("WebSocket not supported", {
+				status: 501,
+			});
+		})
 		.all(
 			"/*",
 			async (ctx) => {
